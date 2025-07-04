@@ -1,0 +1,18 @@
+# Dépendances pour l'API FastAPI
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+mcp-server-email
+asyncio
+
+# Dépendances existantes (à garder si elles ne sont pas déjà installées)
+ agno  # Votre framework d'agent
+ streamlit  # Pour votre interface existante
+ sqlite3  # Base de données
+ pandas  # Manipulation de données
+ numpy  # Calculs numériques
+ ollama # Pour les modèles de langage
+duckdb  # Pour les requêtes SQL
+google-cloud-aiplatform  # Pour l'API Gemini
+google-auth  # Authentification Google

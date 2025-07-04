@@ -1,0 +1,63 @@
+/* Couleurs officielles CTM */
+:root {
+  /* Couleurs principales CTM */
+  --ctm-primary: #0066CC;
+  --ctm-secondary: #004499;
+  --ctm-accent: #00AAFF;
+  --ctm-light: #E6F3FF;
+  --ctm-dark: #003366;
+  
+  /* Couleurs complémentaires */
+  --ctm-success: #28a745;
+  --ctm-warning: #ffc107;
+  --ctm-danger: #dc3545;
+  --ctm-info: #17a2b8;
+  
+  /* Couleurs neutres */
+  --ctm-gray-50: #f8f9fa;
+  --ctm-gray-100: #e9ecef;
+  --ctm-gray-200: #dee2e6;
+  --ctm-gray-300: #ced4da;
+  --ctm-gray-400: #adb5bd;
+  --ctm-gray-500: #6c757d;
+  --ctm-gray-600: #495057;
+  --ctm-gray-700: #343a40;
+  --ctm-gray-800: #212529;
+  --ctm-gray-900: #141619;
+}
+
+/* Classes utilitaires pour les couleurs CTM */
+.ctm-bg-primary { background-color: var(--ctm-primary); }
+.ctm-bg-secondary { background-color: var(--ctm-secondary); }
+.ctm-bg-accent { background-color: var(--ctm-accent); }
+.ctm-bg-light { background-color: var(--ctm-light); }
+
+.ctm-text-primary { color: var(--ctm-primary); }
+.ctm-text-secondary { color: var(--ctm-secondary); }
+.ctm-text-accent { color: var(--ctm-accent); }
+.ctm-text-dark { color: var(--ctm-dark); }
+
+.ctm-border-primary { border-color: var(--ctm-primary); }
+.ctm-border-secondary { border-color: var(--ctm-secondary); }
+
+/* Gradients CTM */
+.ctm-gradient-primary {
+  background: linear-gradient(135deg, var(--ctm-primary) 0%, var(--ctm-accent) 100%);
+}
+
+.ctm-gradient-secondary {
+  background: linear-gradient(135deg, var(--ctm-secondary) 0%, var(--ctm-primary) 100%);
+}
+
+/* Hover effects avec couleurs CTM */
+.ctm-hover-primary:hover {
+  background-color: var(--ctm-primary);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.ctm-hover-accent:hover {
+  background-color: var(--ctm-accent);
+  color: white;
+  transition: all 0.3s ease;
+}

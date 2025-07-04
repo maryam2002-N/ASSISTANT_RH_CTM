@@ -1,0 +1,308 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production builds
+dist/
+dist-ssr/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# IDE and Editor files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Python distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+sqlite.db
+
+# Vector databases
+lancedb/
+lancedb_*/
+*.lance
+
+# AI/ML models and embeddings
+models/
+embeddings/
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+
+# Configuration files with sensitive data
+config.ini
+secrets.json
+api_keys.txt
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.temp/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+._*
+
+# Local development
+local_settings.py
+local_config.py
+
+# Documentation builds
+docs/_build/
+site/
+
+# Virtual environments
+.venv
+.env
+venv/
+ENV/
+
+# Hot reload
+*.local
+
+# Error logs
+error.log
+debug.log
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Package files
+*.tar.gz
+*.zip
+*.rar
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# nyc test coverage
+.nyc_output
+
+# Bower dependency directory
+bower_components
+
+# Lock files (uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+
+# Specific to this project
+Agent_RH_CTM/lancedb/
+Agent_RH_CTM/sqlite.db
+Agent_RH_CTM/lancedb_*/
+Agent_RH_CTM/*.db
+Agent_RH_CTM/models/
+Agent_RH_CTM/embeddings/
+Agent_RH_CTM/txt/
+Agent_RH_CTM/static/cvs/
+Agent_RH_CTM/historique_candidats/
+Agent_RH_CTM/to_pdf/
+Agent_RH_CTM/to_txt/
+Agent_RH_CTM/loaded/
+
+# Email tool cache
+email_cache/
+*.eml
+
+# Knowledge base cache
+kb_cache/
+vector_cache/
+
+# Large files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.pdf
+*.docx
+*.pptx
+*.xlsx
+
+# Development tools
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Streamlit cache
+.streamlit/
+.venv/
+ENV/
+.env
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Database files
+*.db
+sqlite.db
+*.sqlite3
+
+# Local configuration
+users.json
+
+# Logs and temp files
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+.coverage.*
+
+# Project specific directories
+/to_pdf/
+/to_txt/
+/txt/
+/loaded/
+/static/cvs/
+/lancedb/
+
+# Personal/sensitive data
+*.xlsx
+*.xls
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# OS specific files
+.DS_Store
+Thumbs.db

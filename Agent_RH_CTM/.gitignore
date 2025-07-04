@@ -1,0 +1,74 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+/txt
+/lancedb
+/static/cvs
+/historique_candidats
+/to_pdf
+/to_txt
+/loaded
+.env
+
+# C extensions
+# Compiled files
+
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+env/
+.venv/
+ENV/
+.env
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Database files
+*.db
+sqlite.db
+*.sqlite3
+
+# Local configuration
+users.json
+
+# Logs and temp files
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+.coverage.*
+
+# Project specific directories
+/to_pdf/
+/to_txt/
+/txt/
+/loaded/
+/static/cvs/
+/lancedb/
+
+# Personal/sensitive data
+*.xlsx
+*.xls
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# OS specific files
+.DS_Store
+Thumbs.db

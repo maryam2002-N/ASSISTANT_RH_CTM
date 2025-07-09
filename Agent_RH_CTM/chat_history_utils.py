@@ -31,10 +31,51 @@ class ChatHistoryManager:
         self.ensure_db_exists()
     
     def ensure_db_exists(self):
-        """S'assure que la base de données existe"""
+        """S'assure que la base de données existe et a la bonne structure"""
         if not os.path.exists(self.db_path):
-            raise FileNotFoundError(f"Base de données non trouvée: {self.db_path}")
-    
+            # Créer la base de données si elle n'existe pas
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                # Créer la table si elle n'existe pas
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS agent_sessions (
+                        session_id TEXT PRIMARY KEY,
+                        user_id TEXT,
+                        memory TEXT,
+                        created_at INTEGER,
+                        updated_at INTEGER
+                    )
+                ''')
+                conn.commit()
+        else:
+            # Vérifier si la colonne user_id existe
+            try:
+                with self.get_connection() as conn:
+                    cursor = conn.cursor()
+                    # Vérifier la structure de la table
+                    cursor.execute("PRAGMA table_info(agent_sessions)")
+                    columns = [column[1] for column in cursor.fetchall()]
+                    
+                    # Ajouter la colonne user_id si elle n'existe pas
+                    if 'user_id' not in columns:
+                        print("[DEBUG] Ajout de la colonne user_id à la table agent_sessions")
+                        cursor.execute("ALTER TABLE agent_sessions ADD COLUMN user_id TEXT")
+                        conn.commit()
+                    
+                    # Ajouter les colonnes created_at et updated_at si elles n'existent pas
+                    if 'created_at' not in columns:
+                        print("[DEBUG] Ajout de la colonne created_at à la table agent_sessions")
+                        cursor.execute("ALTER TABLE agent_sessions ADD COLUMN created_at INTEGER")
+                        conn.commit()
+                    
+                    if 'updated_at' not in columns:
+                        print("[DEBUG] Ajout de la colonne updated_at à la table agent_sessions")
+                        cursor.execute("ALTER TABLE agent_sessions ADD COLUMN updated_at INTEGER")
+                        conn.commit()
+                        
+            except Exception as e:
+                print(f"[DEBUG] Erreur lors de la vérification de la structure de la base: {e}")
+
     def get_connection(self):
         """Obtient une connexion à la base de données"""
         return sqlite3.connect(self.db_path)
@@ -50,7 +91,7 @@ class ChatHistoryManager:
                     query = """
                     SELECT session_id, user_id, memory, created_at, updated_at
                     FROM agent_sessions 
-                    WHERE user_id = ? OR user_id IS NULL
+                    WHERE user_id = ?
                     ORDER BY created_at DESC 
                     LIMIT ?
                     """
@@ -220,6 +261,115 @@ class ChatHistoryManager:
         except Exception as e:
             print(f"Erreur lors de la récupération des statistiques: {e}")
             return {}
+    
+    def save_conversation(self, user_id: str, user_message: str, assistant_response: str, session_id: str = None):
+        """Sauvegarde une conversation avec l'ID utilisateur"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                
+                # Créer ou mettre à jour la session
+                if session_id:
+                    # Vérifier si la session existe
+                    cursor.execute("SELECT session_id FROM agent_sessions WHERE session_id = ?", (session_id,))
+                    if not cursor.fetchone():
+                        # Créer la session
+                        cursor.execute(
+                            "INSERT INTO agent_sessions (session_id, user_id, memory, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                            (session_id, user_id, json.dumps({"messages": []}), int(datetime.now().timestamp()), int(datetime.now().timestamp()))
+                        )
+                else:
+                    # Créer une nouvelle session
+                    session_id = f"session_{user_id}_{int(datetime.now().timestamp())}"
+                    cursor.execute(
+                        "INSERT INTO agent_sessions (session_id, user_id, memory, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                        (session_id, user_id, json.dumps({"messages": []}), int(datetime.now().timestamp()), int(datetime.now().timestamp()))
+                    )
+                
+                # Récupérer la mémoire actuelle
+                cursor.execute("SELECT memory FROM agent_sessions WHERE session_id = ?", (session_id,))
+                result = cursor.fetchone()
+                
+                if result:
+                    memory_data = json.loads(result[0]) if result[0] else {"messages": []}
+                    
+                    # Ajouter les nouveaux messages
+                    memory_data["messages"].extend([
+                        {"role": "user", "content": user_message, "timestamp": datetime.now().isoformat()},
+                        {"role": "assistant", "content": assistant_response, "timestamp": datetime.now().isoformat()}
+                    ])
+                    
+                    # Mettre à jour la base de données
+                    cursor.execute(
+                        "UPDATE agent_sessions SET memory = ?, updated_at = ? WHERE session_id = ?",
+                        (json.dumps(memory_data), int(datetime.now().timestamp()), session_id)
+                    )
+                    
+                    conn.commit()
+                    return session_id
+                
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde: {e}")
+            return None
+
+    def get_session_by_id(self, session_id: str) -> Optional[ChatSession]:
+        """Récupère une session par son ID"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT session_id, user_id, memory, created_at, updated_at FROM agent_sessions WHERE session_id = ?",
+                    (session_id,)
+                )
+                row = cursor.fetchone()
+                
+                if row:
+                    session_id, user_id, memory_json, created_at, updated_at = row
+                    
+                    # Parser les informations de la session
+                    title = f"Conversation {session_id[:8]}"
+                    message_count = 0
+                    last_message = None
+                    
+                    if memory_json:
+                        try:
+                            memory_data = json.loads(memory_json)
+                            messages = memory_data.get('messages', [])
+                            message_count = len(messages)
+                            
+                            # Générer un titre basé sur le premier message
+                            for msg in messages:
+                                if msg.get('role') == 'user' and msg.get('content'):
+                                    content = msg['content']
+                                    title = content[:50] + "..." if len(content) > 50 else content
+                                    break
+                            
+                            # Récupérer le dernier message
+                            if messages:
+                                last_msg = messages[-1]
+                                last_message = last_msg.get('content', '')[:100]
+                        except (json.JSONDecodeError, KeyError):
+                            pass
+                    
+                    # Convertir timestamps
+                    created_str = datetime.fromtimestamp(created_at).isoformat() if created_at else datetime.now().isoformat()
+                    updated_str = datetime.fromtimestamp(updated_at).isoformat() if updated_at else None
+                    
+                    return ChatSession(
+                        session_id=session_id,
+                        user_id=user_id,
+                        title=title,
+                        created_at=created_str,
+                        updated_at=updated_str,
+                        message_count=message_count,
+                        last_message=last_message
+                    )
+                
+                return None
+                
+        except Exception as e:
+            print(f"Erreur lors de la récupération de la session: {e}")
+            return None
 
 # Instance globale du gestionnaire
 chat_history_manager = ChatHistoryManager()

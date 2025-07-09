@@ -248,11 +248,9 @@ class ApiService {
   async getChatHistory(limit = 50) {
     try {
       const response = await fetch(`${this.baseURL}/api/chat/history?limit=${limit}`, {
-        method: 'GET',
         headers: this.getHeaders(),
       });
-
-      return this.handleResponse(response);
+      return await this.handleResponse(response);
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'historique:', error);
       throw error;
@@ -263,11 +261,9 @@ class ApiService {
   async getSessionMessages(sessionId) {
     try {
       const response = await fetch(`${this.baseURL}/api/chat/session/${sessionId}/messages`, {
-        method: 'GET',
         headers: this.getHeaders(),
       });
-
-      return this.handleResponse(response);
+      return await this.handleResponse(response);
     } catch (error) {
       console.error('Erreur lors de la récupération des messages:', error);
       throw error;
@@ -281,8 +277,7 @@ class ApiService {
         method: 'DELETE',
         headers: this.getHeaders(),
       });
-
-      return this.handleResponse(response);
+      return await this.handleResponse(response);
     } catch (error) {
       console.error('Erreur lors de la suppression de la session:', error);
       throw error;
@@ -297,8 +292,7 @@ class ApiService {
         headers: this.getHeaders(),
         body: JSON.stringify({ title }),
       });
-
-      return this.handleResponse(response);
+      return await this.handleResponse(response);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du titre:', error);
       throw error;
@@ -309,13 +303,25 @@ class ApiService {
   async getChatStats() {
     try {
       const response = await fetch(`${this.baseURL}/api/chat/stats`, {
-        method: 'GET',
         headers: this.getHeaders(),
       });
-
-      return this.handleResponse(response);
+      return await this.handleResponse(response);
     } catch (error) {
       console.error('Erreur lors de la récupération des statistiques:', error);
+      throw error;
+    }
+  }
+
+  // Créer une nouvelle session de chat
+  async createNewChatSession() {
+    try {
+      const response = await fetch(`${this.baseURL}/api/chat/new-session`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      return await this.handleResponse(response);
+    } catch (error) {
+      console.error('Erreur lors de la création d\'une nouvelle session:', error);
       throw error;
     }
   }

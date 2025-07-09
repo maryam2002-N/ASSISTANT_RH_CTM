@@ -1,1 +1,0 @@
-# Package d'interface utilisateur

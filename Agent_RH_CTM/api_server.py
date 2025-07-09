@@ -27,6 +27,11 @@ from chat_history_utils import chat_history_manager, ChatSession, ChatMessage
 agent = None
 agent_ready = False
 
+# Configuration de la stratégie des clés API
+# True: Utilise une nouvelle clé API pour chaque requête (meilleure distribution)
+# False: Utilise un agent persistant par utilisateur (plus efficace pour les conversations longues)
+USE_FRESH_API_KEY_PER_REQUEST = True
+
 def initialize_agent():
     """Initialise l'agent seulement quand nécessaire"""
     global agent, agent_ready
@@ -195,6 +200,17 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     """Récupère les informations de l'utilisateur actuel"""
     return UserInfo(**current_user)
 
+user_agents = {}
+
+def get_agent_for_user(user_id: str):
+    """Récupère ou crée un agent pour un utilisateur spécifique"""
+    if user_id not in user_agents:
+        from agent import create_agent
+        # Créer un agent avec rotation automatique des clés API
+        user_agents[user_id] = create_agent(user_id=user_id)
+        print(f"[API] Nouvel agent créé pour l'utilisateur: {user_id}")
+    return user_agents[user_id]
+
 @app.post("/api/chat/message", response_model=ChatResponse)
 async def send_message(
     chat_data: ChatMessage, 
@@ -206,34 +222,47 @@ async def send_message(
         print(f"[API] Traitement du message de {current_user['email']}: {chat_data.message}")
         
         # Créer un ID de chat si non fourni
-        chat_id = chat_data.chat_id or f"chat_{datetime.now().timestamp()}"
-        # Initialiser l'agent si nécessaire
-        current_agent, as_text_func, as_stream_func = initialize_agent()
-        if not current_agent:
+        chat_id = chat_data.chat_id or f"chat_{current_user['email']}_{int(datetime.now().timestamp())}"
+        
+        # Obtenir l'agent selon la stratégie configurée
+        if USE_FRESH_API_KEY_PER_REQUEST:
+            # Stratégie 1: Nouvelle clé API à chaque requête pour meilleure distribution
+            from agent import create_agent_with_fresh_key
+            user_agent = create_agent_with_fresh_key(current_user['email'])
+            print(f"[API] Agent créé avec nouvelle clé API pour: {current_user['email']}")
+        else:
+            # Stratégie 2: Agent persistant par utilisateur (plus efficace pour les conversations longues)
+            user_agent = get_agent_for_user(current_user['email'])
+            print(f"[API] Agent persistant utilisé pour: {current_user['email']}")
+        
+        if not user_agent:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Agent non disponible"
             )
         
-        # Configurer l'agent avec l'ID utilisateur pour la session
-        session_config = {
-            "session_id": chat_id,
-            "user_id": current_user['email']
-        }
-        
         # Appeler votre agent avec le message
-        response_chunks = current_agent.run(
+        response_chunks = user_agent.run(
             chat_data.message, 
             stream=False,
             session_id=chat_id
         )
         
         # Convertir la réponse en texte
-        response_text = as_text_func(response_chunks)
+        from agent import as_text
+        response_text = as_text(response_chunks)
         
         # Si pas de réponse, message par défaut
         if not response_text.strip():
             response_text = "Je n'ai pas pu traiter votre demande. Veuillez réessayer."
+        
+        # Sauvegarder la conversation avec l'user_id
+        chat_history_manager.save_conversation(
+            user_id=current_user['email'],
+            user_message=chat_data.message,
+            assistant_response=response_text,
+            session_id=chat_id
+        )
         
         print(f"[API] Réponse générée: {response_text[:100]}...")
         
@@ -577,8 +606,18 @@ async def get_session_messages(
     session_id: str,
     current_user: dict = Depends(get_current_user)
 ):
-    """Récupère les messages d'une session spécifique"""
+    """Récupère les messages d'une session spécifique appartenant à l'utilisateur"""
     try:
+        user_id = current_user.get('email')
+        
+        # Vérifier que la session appartient à l'utilisateur
+        session = chat_history_manager.get_session_by_id(session_id)
+        if not session or session.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Session non trouvée ou accès non autorisé"
+            )
+        
         # Récupérer les messages de la session
         messages = chat_history_manager.get_session_messages(session_id)
         
@@ -609,8 +648,19 @@ async def delete_chat_session(
     session_id: str,
     current_user: dict = Depends(get_current_user)
 ):
-    """Supprime une session de chat"""
+    """Supprime une session de chat appartenant à l'utilisateur"""
     try:
+        user_id = current_user.get('email')
+        
+        # Vérifier que la session appartient à l'utilisateur
+        session = chat_history_manager.get_session_by_id(session_id)
+        if not session or session.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Session non trouvée ou accès non autorisé"
+            )
+        
+        # Supprimer la session
         success = chat_history_manager.delete_session(session_id)
         
         if success:
@@ -676,6 +726,32 @@ async def get_chat_stats(current_user: dict = Depends(get_current_user)):
             detail=f"Erreur lors de la récupération des statistiques: {str(e)}"
         )
 
+@app.get("/api/config/api-keys")
+async def get_api_key_config(current_user: dict = Depends(get_current_user)):
+    """Obtenir la configuration actuelle des clés API"""
+    return {
+        "use_fresh_api_key_per_request": USE_FRESH_API_KEY_PER_REQUEST,
+        "description": "True = Nouvelle clé API par requête, False = Agent persistant"
+    }
+
+@app.post("/api/config/api-keys")
+async def set_api_key_config(
+    use_fresh_key: bool, 
+    current_user: dict = Depends(get_current_user)
+):
+    """Configurer la stratégie des clés API"""
+    global USE_FRESH_API_KEY_PER_REQUEST
+    USE_FRESH_API_KEY_PER_REQUEST = use_fresh_key
+    
+    # Nettoyer les agents existants si on change de stratégie
+    global user_agents
+    user_agents.clear()
+    
+    return {
+        "message": "Configuration mise à jour",
+        "use_fresh_api_key_per_request": USE_FRESH_API_KEY_PER_REQUEST
+    }
+
 @app.get("/api/health")
 async def health_check():
     """Endpoint de vérification de santé"""
@@ -716,3 +792,39 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+
+@app.post("/api/chat/new-session")
+async def create_new_chat_session(current_user: dict = Depends(get_current_user)):
+    """Crée une nouvelle session de chat pour l'utilisateur"""
+    try:
+        user_email = current_user.get('email')
+        user_name = current_user.get('name', user_email.split('@')[0])
+        
+        # Créer un nouvel ID de session
+        new_chat_id = f"chat_{user_email}_{int(datetime.now().timestamp())}"
+        
+        # Message de bienvenue pour la nouvelle session
+        welcome_message = f"🆕 Nouvelle conversation démarrée !\n\nBonjour {user_name}, comment puis-je vous aider aujourd'hui ?\n\n💡 Conseils :\n• Posez-moi des questions sur les CV\n• Demandez des analyses de candidats\n• Recherchez des profils spécifiques"
+        
+        # Sauvegarder le message de bienvenue
+        chat_history_manager.save_conversation(
+            user_id=user_email,
+            user_message="Nouvelle session créée",
+            assistant_response=welcome_message,
+            session_id=new_chat_id
+        )
+        
+        return {
+            "success": True,
+            "chat_id": new_chat_id,
+            "welcome_message": welcome_message,
+            "timestamp": datetime.now().isoformat(),
+            "message": "Nouvelle conversation créée avec succès"
+        }
+        
+    except Exception as e:
+        print(f"[API] Erreur lors de la création d'une nouvelle session: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erreur lors de la création de la nouvelle session: {str(e)}"
+        )

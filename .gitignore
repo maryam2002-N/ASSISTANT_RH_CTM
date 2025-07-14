@@ -18,12 +18,12 @@ dist-ssr/
 build/
 
 # Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.example
+#.env
+#.env.local
+#.env.development.local
+#.env.test.local
+#.env.production.local
+#.env.example
 
 # IDE and Editor files
 .vscode/*
@@ -145,7 +145,7 @@ site/
 
 # Virtual environments
 .venv
-.env
+##.env
 venv/
 ENV/
 
@@ -183,7 +183,7 @@ debug.log
 .yarn-integrity
 
 # dotenv environment variables file
-.env.test
+#.env.test
 
 # Next.js build output
 .next
@@ -260,7 +260,7 @@ vector_cache/
 .streamlit/
 .venv/
 ENV/
-.env
+#.env
 
 # IDE specific files
 .idea/
@@ -277,7 +277,7 @@ sqlite.db
 *.sqlite3
 
 # Local configuration
-users.json
+#users.json
 
 # Logs and temp files
 *.log

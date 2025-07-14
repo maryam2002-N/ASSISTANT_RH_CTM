@@ -1,7 +1,21 @@
 [
     {
-        "email": "recrutement-ctm@ctm.ma",
-        "activated": false
+        "email": "nfadmaryam@gmail.com",
+        "activated": false 
+       
+    },
+    {
+        "email": "mnfad@ctm.ma",
+        "activated": true,
+        "activation_code": "",
+        "name": "MARYAM NFAD",
+        "password_hash": "fc9150e1736435f61a8b22b111ad840062934e0f23dee66046a0f3881189a8bf"
+    },
+    {
+        "email": "maryam.nfad-etu@etu.univh2c.ma",
+        "activated": true,
+        "activation_code": "",
+        "name": "MARYAM",
+        "password_hash": "fc9150e1736435f61a8b22b111ad840062934e0f23dee66046a0f3881189a8bf"
     }
-   
 ]

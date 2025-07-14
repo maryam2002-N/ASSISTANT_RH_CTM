@@ -11,7 +11,7 @@ __pycache__/
 /to_pdf
 /to_txt
 /loaded
-.env
+#.env
 
 # C extensions
 # Compiled files
@@ -26,7 +26,7 @@ build/
 env/
 .venv/
 ENV/
-.env
+#.env
 
 # IDE specific files
 .idea/
@@ -43,7 +43,7 @@ sqlite.db
 *.sqlite3
 
 # Local configuration
-users.json
+#users.json
 
 # Logs and temp files
 *.log

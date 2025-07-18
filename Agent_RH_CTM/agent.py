@@ -53,8 +53,8 @@ def as_text(chunks):
             # Traitement des différents types de chunks
             if isinstance(chunk, RunResponse):
                 if hasattr(chunk, 'content') and isinstance(chunk.content, str):
-                    if chunk.event == RunEvent.run_response:
-                        text += chunk.content
+                    # if chunk.event == RunEvent.run_response:
+                    text += chunk.content
                 elif hasattr(chunk, '__str__'):
                     text += str(chunk)
             elif isinstance(chunk, str):
@@ -82,8 +82,8 @@ def as_text(chunks):
         
         if isinstance(chunks, RunResponse):
             if hasattr(chunks, 'content') and isinstance(chunks.content, str):
-                if chunks.event == RunEvent.run_response:
-                    text = chunks.content
+                # if chunks.event == RunEvent.run_response:
+                text = chunks.content
             elif hasattr(chunks, '__str__'):
                 text = str(chunks)
         elif isinstance(chunks, str):
@@ -527,15 +527,15 @@ def as_stream(chunks):
     try:
         for chunk in chunks:
             if isinstance(chunk, RunResponse) and isinstance(chunk.content, str):
-                if chunk.event == RunEvent.run_response:
-                    yield chunk.content
+                # if chunk.event == RunEvent.run_response:
+                yield chunk.content
             elif isinstance(chunk, str):
                 yield chunk
     except TypeError:
         # Si chunks n'est pas itérable, essayer de l'utiliser directement
         if isinstance(chunks, RunResponse) and isinstance(chunks.content, str):
-            if chunks.event == RunEvent.run_response:
-                yield chunks.content
+            # if chunks.event == RunEvent.run_response:
+            yield chunks.content
         elif isinstance(chunks, str):
             yield chunks
 

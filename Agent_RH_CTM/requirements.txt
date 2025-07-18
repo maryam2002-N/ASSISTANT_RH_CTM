@@ -1,13 +1,13 @@
 # Dépendances pour l'API FastAPI
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
-pydantic==2.5.0
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic 
 mcp-server-email
-asyncio
-pgvector>=0.2.0
-psycopg2-binary>=2.9.0
-sqlalchemy>=2.0.0
+# asyncio
+pgvector 
+psycopg2-binary 
+sqlalchemy
 
 
 agno  # Votre framework d'agent
@@ -20,36 +20,36 @@ google-cloud-aiplatform  # Pour l'API Gemini
 google-auth  # Authentification Google
 
 
-streamlit>=1.28.0  # Pour app.py (interface Streamlit)
-python-jose[cryptography]>=3.3.0  # Pour JWT tokens
-passlib[bcrypt]>=1.7.4  # Pour le hachage des mots de passe
-python-dotenv>=0.19.0  # Pour charger les variables d'environnement (.env)
-openpyxl>=3.0.0  # Pour traiter les fichiers Excel (.xlsx)
-xlrd>=2.0.0  # Pour lire les anciens fichiers Excel (.xls)
-PyPDF2>=3.0.0  # Pour traiter les fichiers PDF
-python-docx>=0.8.11  # Pour traiter les fichiers Word
-lancedb>=0.3.0  # Pour la base de données vectorielle
-sentence-transformers>=2.2.0  # Pour les embeddings
-requests>=2.28.0  # Pour les requêtes HTTP
-aiofiles>=22.0.0  # Pour la gestion asynchrone des fichiers
-email-validator>=1.3.0  # Pour valider les emails
-jinja2>=3.1.0  # Pour les templates HTML
-python-multipart>=0.0.5  # Pour le traitement des formulaires
-httpx>=0.24.0  # Client HTTP asynchrone
-bcrypt>=4.0.0  # Pour le hachage sécurisé
-cryptography>=3.4.0  # Pour la cryptographie
-pyjwt>=2.6.0  # Pour les tokens JWT
+streamlit  # Pour app.py (interface Streamlit)
+python-jose[cryptography]  # Pour JWT tokens
+passlib[bcrypt]  # Pour le hachage des mots de passe
+python-dotenv  # Pour charger les variables d'environnement (.env)
+openpyxl # Pour traiter les fichiers Excel (.xlsx)
+xlrd  # Pour lire les anciens fichiers Excel (.xls)
+PyPDF2  # Pour traiter les fichiers PDF
+python-docx  # Pour traiter les fichiers Word
+lancedb  # Pour la base de données vectorielle
+sentence-transformers # Pour les embeddings
+requests  # Pour les requêtes HTTP
+aiofiles # Pour la gestion asynchrone des fichiers
+email-validator  # Pour valider les emails
+jinja2  # Pour les templates HTML
+python-multipart  # Pour le traitement des formulaires
+httpx  # Client HTTP asynchrone
+bcrypt # Pour le hachage sécurisé
+cryptography # Pour la cryptographie
+pyjwt # Pour les tokens JWT
 
 
-FlagEmbedding>=1.2.0  # Pour le reranker BAAI/bge-reranker-v2-m3 utilisé dans agent.py
+FlagEmbedding # Pour le reranker BAAI/bge-reranker-v2-m3 utilisé dans agent.py
 random  # Module intégré Python (pas besoin d'installer)
-inspect  # Module intégré Python (pas besoin d'installer)
-time  # Module intégré Python (pas besoin d'installer)
+# inspect  # Module intégré Python (pas besoin d'installer)
+# time  # Module intégré Python (pas besoin d'installer)
 
 
 
-typing-extensions>=4.0.0  # Pour les annotations de type avancées
-python-dateutil>=2.8.0  # Pour le parsing de dates
-six>=1.16.0  # Souvent requis par d'autres packages
-setuptools>=65.0.0  # Pour certains packages
-wheel>=0.37.0  # Pour l'installation de packages
+typing-extensions  # Pour les annotations de type avancées
+python-dateutil  # Pour le parsing de dates
+six  # Souvent requis par d'autres packages
+setuptools  # Pour certains packages
+wheel # Pour l'installation de packages

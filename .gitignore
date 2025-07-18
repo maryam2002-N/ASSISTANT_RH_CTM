@@ -297,11 +297,11 @@ htmlcov/
 # Personal/sensitive data
 *.xlsx
 *.xls
-*.pdf
-*.jpg
-*.jpeg
-*.png
-*.gif
+# *.pdf
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
 
 # OS specific files
 .DS_Store

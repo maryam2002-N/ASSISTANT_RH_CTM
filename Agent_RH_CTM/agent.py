@@ -483,19 +483,21 @@ class DebugTextKnowledgeBase(TextKnowledgeBase):
 
 
 def create_knowledge_base():
-    """Crée et configure la base de connaissances avec reranking et debugging"""
+    """Crée et configure la base de connaissances sans reranking"""
     vector_db = create_vector_db()
-    reranker = create_reranker()
+    # RERANKER DÉSACTIVÉ
+    # reranker = create_reranker()
+    reranker = None
     
     print(f"[DEBUG] 📚 Initializing knowledge base from path: 'txt'")
     print(f"[DEBUG] 📚 Vector DB: {type(vector_db).__name__}")
-    print(f"[DEBUG] 📚 Reranker: {type(reranker).__name__ if reranker else 'None'}")
+    print(f"[DEBUG] 📚 Reranker: DÉSACTIVÉ")
     
     knowledge_base = DebugTextKnowledgeBase(
         path="txt", 
         vector_db=vector_db, 
         num_documents=5,
-        reranker=reranker
+        reranker=None  # Reranker explicitement désactivé
     )
     
     # Verify reranker is properly set
